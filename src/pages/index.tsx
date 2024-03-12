@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import Layout from "./components/layout";
+import Layout from "../components/layout";
 
 export default function Home() {
   return (
@@ -11,6 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
+        <h3>Welcome</h3>
       </Layout>
     </>
   );
