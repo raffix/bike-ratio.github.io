@@ -2,11 +2,11 @@
 <html lang="en" class="no-js">
   <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bike Ratio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
     <header>
@@ -14,36 +14,68 @@
         <div class="nav-wrapper teal lighten-2">
           <ul id="nav-mobile" class="left hide-on-med-and-down">
             <li><a href="#">Top</a></li>
-            <li><a href="#end">Links</a></li>
+            <li><a href="#footer">Links</a></li>
           </ul>
         </div>
       </nav>
     </header>
     <main>
       <div class="row">
-        <div class="col s12 m6">
+        <div class="col s12 m6 l3">
           <div class="card">
             <div class="card-content">
-              <span class="card-title">Chainrings</span>
-              <p>Please add the necessary chainring setup you want compare to use. <br />Each input with the setup, when more than one chainring (double or triple) add the , between each value like 22, 36.</p>
-              <ul>
+              <span 
+                class="card-title tooltipped left" 
+                data-position="bottom" 
+                data-tooltip="Please add the necessary chainring setup you want compare to use. <br />Each input with the setup, when more than one chainring (double or triple) add the , between each value like 22, 36."
+              >Chainrings</span>
+              <button 
+                class="btn-floating waves-effect right"
+                onclick="addChainring()" >
+                <i class="material-icons">add</i>
+              </button>
+              <button 
+                class="btn-floating waves-effect red darken-1 right"
+                onclick="removeChainring()" >
+                <i class="material-icons">remove</i>
+              </button>
+              <ul id="chainring-inputs">
                 <li class="input-field">
                   <input placeholder="Chainring teeth. ex.: 22, 36 or 42" type="text" />
-                  <label>Chainring teeth</label>
                 </li>
               </ul>
-              <button class="btn waves-effect">Add
-                <i class="material-icons right">add</i>
+              
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-content">
+              <span 
+                class="card-title tooltipped left" 
+                data-position="bottom" 
+                data-tooltip="Please add the necessary cassetes setup you want compare to use. "
+              >Cassetes</span>
+              <button 
+                class="btn-floating waves-effect right"
+                onclick="addCassetes()" >
+                <i class="material-icons">add</i>
               </button>
-              <button class="btn waves-effect red darken-1">Remove
-                <i class="material-icons right">remove</i>
+              <button 
+                class="btn-floating waves-effect red darken-1 right"
+                onclick="removeCassete()" >
+                <i class="material-icons">remove</i>
               </button>
+              <ul id="cassetes-inputs">
+                <li class="input-field">
+                  <input placeholder="Cassete teeth. ex.: 11,12,13,14,15,18,21,24,28 or 15" type="text" />
+                </li>
+              </ul>
+              
             </div>
           </div>
         </div>
       </div>
     </main>
-    <footer class="page-footer teal lighten-2">
+    <footer class="page-footer teal lighten-2" id="footer">
       <div class="container">
         <div class="row">
           <div class="col l6 s12">
@@ -64,6 +96,8 @@
         </div>
       </div>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
