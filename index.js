@@ -1,5 +1,5 @@
-const chainringInput = '<li class="input-field"><input class="input-chainring" placeholder="Chainring teeth. ex.: 22, 36 or 42" type="text" /></li>';
-const casseteInput = '<li class="input-field"><input class="input-cassete" placeholder="Cassete teeth. ex.: 11,12,13,14,15,18,21,24,28 or 15" type="text" /></li>';
+const chainringInput = '<li class="input-field"><input class="input-chainring" placeholder="Chainring teeth. ex.: 22- 36 or 42" type="text" /></li>';
+const casseteInput = '<li class="input-field"><input class="input-cassete" placeholder="Cassete teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" type="text" /></li>';
  
 function addHTMLToUL(ulId, htmlContent) {
     const ulElement = document.getElementById(ulId);
@@ -50,8 +50,8 @@ function removeCassete() {
 }
 
 function splitAndTrim(line) {
-    const values = line.split(',')
-        .map((value) => value.trim());
+    const values = line.split('-')
+        .map((value) => Number(value.trim()));
     return values;
 }
 
@@ -77,14 +77,89 @@ function getCassetes() {
     return getValuesFromInputsByClassName('input-cassete');
 }
 
-function calculate() {
+function buildDataset() {
     document.getElementById("results").innerHTML= '';
-    const chainrings = getChainrings();
+    const cranksets = getChainrings();
     const cassetes = getCassetes();
+    
+    const data = [];
+    let id = 1;
+    cranksets.forEach((chainrings) => {
+        cassetes.forEach((cassete) => {
+            const line = [];
+            chainrings.forEach((chainringTeeth) => {
+                if (chainringTeeth < 1) {
+                    return console.error('Invalid chainring teeth');
+                }
 
+                cassete.forEach((cogTeeth) => {
+                    line.push(chainringTeeth/cogTeeth);
+                });
+                
+            });
+            data.push({
+                id: id++,
+                chainset: chainrings,
+                cassete: cassete,
+                relation: line,
+            });
+        });
+    });
+    return data;
+}
+
+function calculate() {
+    const infos = buildDataset();
+
+    const data = infos.map((element) => {
+        return {
+            label: 'crank ' + element.chainset + ' with ' + element.cassete, 
+            data: element.relation 
+        };
+    });
+
+    document.getElementById('acquisitions').innerHTML = '';
+
+    const config = {
+        type: 'line',
+        data: {
+            datasets: data
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Gear ratios for combinations'
+            },
+          },
+          interaction: {
+            intersect: false,
+          },
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: 'GearRatio'
+              },
+              suggestedMin: 0,
+              suggestedMax: 10
+            }
+          }
+        },
+    };
+
+    new Chart(document.getElementById('acquisitions'), config);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     const elems = document.querySelectorAll('.tooltipped');
-    const instances = M.Tooltip.init(elems, options);
+    const instances = M.Tooltip.init(elems);
 });
