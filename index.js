@@ -111,19 +111,35 @@ function buildDataset() {
 function calculate() {
     const infos = buildDataset();
 
-    const data = infos.map((element) => {
+    const lineSize = (infos.reduce((biggesRelationLength, currentObject) => {
+        const { relation: currentRelation = [] } = currentObject;
+        const { relation: biggestRelation = [] } = biggesRelationLength || {};
+      
+        return currentRelation.length > biggestRelation.length ? currentObject : biggesRelationLength;
+      }, {})).relation.length;
+    
+    const labels = Array.from({ length: lineSize }, (_, i) => i);
+    const chartDataset = infos.map((element) => {
+        const relation = element.relation.sort((a, b) => b - a);
+        while (relation.length < lineSize) {
+            relation.push(NaN);
+        }
+
         return {
             label: 'crank ' + element.chainset + ' with ' + element.cassete, 
-            data: element.relation 
+            data: relation ,
+            cubicInterpolationMode: 'monotone',
         };
     });
 
     document.getElementById('acquisitions').innerHTML = '';
+    document.getElementById('acquisitions').innerHTML = '<canvas id="acquisitions"></canvas>';
 
     const config = {
         type: 'line',
         data: {
-            datasets: data
+            labels,
+            datasets: chartDataset
         },
         options: {
           responsive: true,
@@ -132,27 +148,10 @@ function calculate() {
               display: true,
               text: 'Gear ratios for combinations'
             },
-          },
-          interaction: {
-            intersect: false,
-          },
-          scales: {
-            x: {
-              display: true,
-              title: {
-                display: true
-              }
+            legend: {
+              position: 'Bottom',
             },
-            y: {
-              display: true,
-              title: {
-                display: true,
-                text: 'GearRatio'
-              },
-              suggestedMin: 0,
-              suggestedMax: 10
-            }
-          }
+          },
         },
     };
 
