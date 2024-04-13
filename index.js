@@ -118,7 +118,7 @@ function calculate() {
         return currentRelation.length > biggestRelation.length ? currentObject : biggesRelationLength;
       }, {})).relation.length;
     
-    const labels = Array.from({ length: lineSize }, (_, i) => i);
+    const labels = Array.from({ length: lineSize }, (_, i) => i+1);
     const chartDataset = infos.map((element) => {
         const relation = element.relation.sort((a, b) => b - a);
         while (relation.length < lineSize) {
@@ -143,6 +143,9 @@ function calculate() {
         },
         options: {
           responsive: true,
+          interaction: {
+            mode: 'index',
+          },
           plugins: {
             title: {
               display: true,
@@ -151,6 +154,15 @@ function calculate() {
             legend: {
               position: 'bottom',
             },
+            tooltip: {
+                enabled: true,
+                external: function (context) {
+                    context.tooltip.body.forEach((element) => {
+                        const content = element.lines[0].split(':')[1];
+                        element.lines[0] = content;
+                    })
+                }
+            }
           },
         },
     };
