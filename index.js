@@ -132,8 +132,8 @@ function calculate() {
         };
     });
 
-    document.getElementById('acquisitions').innerHTML = '';
-    document.getElementById('acquisitions').innerHTML = '<canvas id="acquisitions"></canvas>';
+    document.getElementById('chart-container').innerHTML = '';
+    document.getElementById('chart-container').innerHTML = '<canvas id="acquisitions"></canvas>';
 
     const config = {
         type: 'line',
@@ -149,7 +149,7 @@ function calculate() {
               text: 'Gear ratios for combinations'
             },
             legend: {
-              position: 'Bottom',
+              position: 'bottom',
             },
           },
         },
