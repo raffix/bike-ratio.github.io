@@ -120,7 +120,7 @@ function calculate() {
     
     const labels = Array.from({ length: lineSize }, (_, i) => i+1);
     const chartDataset = infos.map((element) => {
-        const relation = element.relation.sort((a, b) => b - a);
+        const relation = element.relation.sort();
         while (relation.length < lineSize) {
             relation.push(NaN);
         }
