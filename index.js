@@ -120,7 +120,9 @@ function calculate() {
     
     const labels = Array.from({ length: lineSize }, (_, i) => i+1);
     const chartDataset = infos.map((element) => {
-        const relation = element.relation.sort();
+        const sortSelect = document.getElementById('sort').value;
+        const relation = sortSelect === 'default' ? element.relation : element.relation.sort();
+        
         while (relation.length < lineSize) {
             relation.push(NaN);
         }
@@ -172,5 +174,7 @@ function calculate() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const elems = document.querySelectorAll('.tooltipped');
-    const instances = M.Tooltip.init(elems);
+    const select = document.querySelectorAll('select');
+    const instancesElems = M.Tooltip.init(elems);
+    const instanceSelect = M.FormSelect.init(select);
 });
