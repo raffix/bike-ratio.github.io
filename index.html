@@ -27,7 +27,7 @@
               <span 
                 class="card-title tooltipped left" 
                 data-position="bottom" 
-                data-tooltip="Please add the necessary chainring setup you want compare to use. <br />Each input with the setup, when more than one chainring (double or triple) add the , between each value like 22, 36."
+                data-tooltip="Please add the necessary chainring setup you want to compare. <br />Each input with the setup, if more than one chainring (double or triple) add the values separated by commas like 22,36."
               >Chainrings</span>
               <button 
                 class="btn-floating waves-effect right"
@@ -73,31 +73,31 @@
               <span 
                 class="card-title tooltipped left" 
                 data-position="bottom" 
-                data-tooltip="Please add the necessary cassetes setup you want compare to use. "
-              >Cassetes</span>
+                data-tooltip="Please add the necessary cassette setup you want to compare. "
+              >Cassettes</span>
               <button 
                 class="btn-floating waves-effect right"
-                onclick="addCassetes()" >
+                onclick="addCassette()" >
                 <i class="material-icons">add</i>
               </button>
               <button 
                 class="btn-floating waves-effect red darken-1 right"
-                onclick="removeCassete()" >
+                onclick="removeCassette()" >
                 <i class="material-icons">remove</i>
               </button>
-              <ul id="cassetes-inputs">
+              <ul id="cassettes-inputs">
                 <li class="input-field">
                   <input 
-                    class="input-cassete" 
-                    placeholder="Cassete teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" 
+                    class="input-cassette" 
+                    placeholder="Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" 
                     type="text"
                     value="11-13-15-17-20-23-26-30-34" 
                   />
                 </li>
                 <li class="input-field">
                   <input 
-                    class="input-cassete" 
-                    placeholder="Cassete teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" 
+                    class="input-cassette" 
+                    placeholder="Cassette teeth. ex.: 11-12-13-14-15-17-19-21-23-25" 
                     type="text"
                     value="12-13-14-15-17-19-21-23-25" 
                   />
@@ -113,14 +113,14 @@
               <span 
                 class="card-title tooltipped left" 
                 data-position="bottom" 
-                data-tooltip="Please add the necessary chainring setup you want compare to use. <br />Each input with the setup, when more than one chainring (double or triple) add the , between each value like 22, 36."
+                data-tooltip="Please add the necessary chainring setup you want to compare."
               >Results</span>
               <button
                 class="btn-floating waves-effect right"
                 onclick="calculate()">
                 <i class="material-icons">play_arrow</i>
               </button>
-              <div class="input-fiel col s12 l3 right">
+              <div class="input-field col s12 l3 right">
                 <select id="sort">
                   <option value="default" selected>Default</option>
                   <option value="ascending">Ascending</option>
@@ -129,9 +129,7 @@
               <div id="chart-container" style="max-width: 1200px;">
                 <canvas id="acquisitions"></canvas>
               </div>
-              <div id="results">
-
-              </div>
+              <div id="results"></div>
             </div>
           </div>
         </div>
@@ -142,7 +140,7 @@
         <div class="row">
           <div class="col l6 s12">
             <h5 class="white-text">Bike Ratio</h5>
-            <p class="grey-text text-lighten-4">This application should help you find the best setup for your bike.</p>
+            <p class="grey-text text-lighten-4">This application helps you find the best setup for your bike.</p>
           </div>
           <div class="col l4 offset-l2 s12">
             <h5 class="white-text">Links</h5>

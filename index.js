@@ -1,180 +1,197 @@
-const chainringInput = '<li class="input-field"><input class="input-chainring" placeholder="Chainring teeth. ex.: 22- 36 or 42" type="text" /></li>';
-const casseteInput = '<li class="input-field"><input class="input-cassete" placeholder="Cassete teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" type="text" /></li>';
- 
+const chainringInputTemplate = `
+  <li class="input-field">
+    <input class="input-chainring" placeholder="Chainring teeth. ex.: 22-36 or 42" type="text" />
+  </li>`;
+  
+const cassetteInputTemplate = `
+  <li class="input-field">
+    <input class="input-cassette" placeholder="Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" type="text" />
+  </li>`;
+
+/** Adds HTML content to a UL element with a specific ID */
 function addHTMLToUL(ulId, htmlContent) {
-    const ulElement = document.getElementById(ulId);
-  
-    if (!ulElement) {
-      console.error(`UL element with ID "${ulId}" not found.`);
-      return;
-    }
-
-    const newContent = document.createElement('div');
-    newContent.innerHTML = htmlContent;  
-    const contentFragments = Array.from(newContent.childNodes);
-    contentFragments.forEach(fragment => ulElement.appendChild(fragment));
+  const ulElement = document.getElementById(ulId);
+  if (!ulElement) {
+    console.error(`UL element with ID "${ulId}" not found.`);
+    return;
+  }
+  ulElement.insertAdjacentHTML('beforeend', htmlContent);
 }
 
+/** Removes the last list item (LI) from a UL element */
 function removeLastLI(ulId) {
-    const ulElement = document.getElementById(ulId);
-  
-    if (!ulElement) {
-      console.error(`UL element with ID "${ulId}" not found.`);
-      return;
-    }
-  
-    const liElements = ulElement.querySelectorAll('li');
-  
-    if (!liElements.length) {
-      console.warn(`UL element with ID "${ulId}" has no LI children.`);
-      return;
-    }
-  
-    ulElement.removeChild(liElements[liElements.length - 1]);
+  const ulElement = document.getElementById(ulId);
+  if (!ulElement) {
+    console.error(`UL element with ID "${ulId}" not found.`);
+    return;
+  }
+  const lastLI = ulElement.querySelector('li:last-child');
+  if (lastLI) {
+    ulElement.removeChild(lastLI);
+  } else {
+    console.warn(`No list items to remove in UL with ID "${ulId}".`);
+  }
 }
 
+/** Adds a chainring input field */
 function addChainring() {
-    addHTMLToUL("chainring-inputs", chainringInput);
+  addHTMLToUL("chainring-inputs", chainringInputTemplate);
 }
 
+/** Removes the last chainring input field */
 function removeChainring() {
-    removeLastLI("chainring-inputs");
+  removeLastLI("chainring-inputs");
 }
 
-function addCassetes() {
-    addHTMLToUL("cassetes-inputs", casseteInput);
+/** Adds a cassette input field */
+function addCassette() {
+  addHTMLToUL("cassettes-inputs", cassetteInputTemplate);
 }
 
-function removeCassete() {
-    removeLastLI("cassetes-inputs");
+/** Removes the last cassette input field */
+function removeCassette() {
+  removeLastLI("cassettes-inputs");
 }
 
-function splitAndTrim(line) {
-    const values = line.split('-')
-        .map((value) => Number(value.trim()));
-    return values;
+/** Splits and trims a string by '-' and converts it to an array of numbers */
+function splitAndTrim(input) {
+  return input.split('-')
+    .map(value => {
+      const trimmedValue = Number(value.trim());
+      return isNaN(trimmedValue) || trimmedValue <= 0 ? null : trimmedValue;
+    }).filter(Boolean);  // Filters out invalid (null/NaN) values
 }
 
-function getArrayByClass(className) {
-    const elements = document.getElementsByClassName(className);
-    return Array.from(elements);
-}
-
+/** Extracts values from inputs of a given class name */
 function getValuesFromInputsByClassName(className) {
-    const elements = getArrayByClass(className)
-        .map(item => {
-            return splitAndTrim(item.value);
+  const inputs = document.querySelectorAll(`.${className}`);
+  return Array.from(inputs)
+    .map(input => splitAndTrim(input.value))
+    .filter(values => values.length > 0);
+}
+
+/** Builds dataset for chart display based on chainring and cassette values */
+function buildDataset(chainrings, cassettes) {
+  const data = [];
+  let id = 1;
+
+  chainrings.forEach(chainset => {
+    cassettes.forEach(cassette => {
+      const ratio = chainset.map(chainring => cassette.map(cog => chainring / cog)).flat();
+      data.push({
+        id: id++,
+        chainset,
+        cassette,
+        ratio,
+      });
     });
+  });
 
-    return elements;
+  return data;
 }
 
-function getChainrings() {
-    return getValuesFromInputsByClassName('input-chainring');
-}
-
-function getCassetes() {
-    return getValuesFromInputsByClassName('input-cassete');
-}
-
-function buildDataset() {
-    document.getElementById("results").innerHTML= '';
-    const cranksets = getChainrings();
-    const cassetes = getCassetes();
-    
-    const data = [];
-    let id = 1;
-    cranksets.forEach((chainrings) => {
-        cassetes.forEach((cassete) => {
-            const line = [];
-            chainrings.forEach((chainringTeeth) => {
-                if (chainringTeeth < 1) {
-                    return console.error('Invalid chainring teeth');
-                }
-
-                cassete.forEach((cogTeeth) => {
-                    line.push(chainringTeeth/cogTeeth);
-                });
-                
-            });
-            data.push({
-                id: id++,
-                chainset: chainrings,
-                cassete: cassete,
-                relation: line,
-            });
-        });
+/** Sorts the gear ratio dataset if needed */
+function sortDataset(dataset, sortOrder) {
+  if (sortOrder === "ascending") {
+    dataset.forEach(item => {
+      item.ratio.sort((a, b) => a - b);
     });
-    return data;
+  }
+  return dataset;
 }
 
+/** Updates the Chart.js chart with the new dataset */
+function updateChart(dataset, chart) {
+  const labels = Array.from({ length: Math.max(...dataset.map(d => d.ratio.length)) }, (_, i) => i + 1);
+  const chartData = dataset.map(item => ({
+    label: `Crank ${item.chainset} with Cassette ${item.cassette}`,
+    data: item.ratio,
+    fill: false,
+    borderColor: getRandomColor(),
+    tension: 0.3
+  }));
+
+  chart.data.labels = labels;
+  chart.data.datasets = chartData;
+  chart.update();
+}
+
+/** Generates a random color for each dataset */
+function getRandomColor() {
+  const r = Math.floor(Math.random() * 255);
+  const g = Math.floor(Math.random() * 255);
+  const b = Math.floor(Math.random() * 255);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+/** Main calculation function that processes inputs and updates the chart */
 function calculate() {
-    const infos = buildDataset();
+  const chainrings = getValuesFromInputsByClassName("input-chainring");
+  const cassettes = getValuesFromInputsByClassName("input-cassette");
 
-    const lineSize = (infos.reduce((biggesRelationLength, currentObject) => {
-        const { relation: currentRelation = [] } = currentObject;
-        const { relation: biggestRelation = [] } = biggesRelationLength || {};
-      
-        return currentRelation.length > biggestRelation.length ? currentObject : biggesRelationLength;
-      }, {})).relation.length;
-    
-    const labels = Array.from({ length: lineSize }, (_, i) => i+1);
-    const chartDataset = infos.map((element) => {
-        const sortSelect = document.getElementById('sort').value;
-        const relation = sortSelect === 'default' ? element.relation : element.relation.sort();
-        
-        while (relation.length < lineSize) {
-            relation.push(NaN);
-        }
+  if (chainrings.length === 0 || cassettes.length === 0) {
+    alert("Please enter valid chainring and cassette values.");
+    return;
+  }
 
-        return {
-            label: 'crank ' + element.chainset + ' with ' + element.cassete, 
-            data: relation ,
-            cubicInterpolationMode: 'monotone',
-        };
-    });
+  let dataset = buildDataset(chainrings, cassettes);
+  const sortOrder = document.getElementById("sort").value;
+  dataset = sortDataset(dataset, sortOrder);
 
-    document.getElementById('chart-container').innerHTML = '';
-    document.getElementById('chart-container').innerHTML = '<canvas id="acquisitions"></canvas>';
-
-    const config = {
-        type: 'line',
-        data: {
-            labels,
-            datasets: chartDataset
+  // Update the chart
+  const ctx = document.getElementById('acquisitions').getContext('2d');
+  if (window.myChart) window.myChart.destroy(); // Destroy previous chart instance
+  window.myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [],
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Gear Ratios for Chainring and Cassette Combinations'
         },
-        options: {
-          responsive: true,
-          interaction: {
-            mode: 'index',
-          },
-          plugins: {
-            title: {
-              display: true,
-              text: 'Gear ratios for combinations'
-            },
-            legend: {
-              position: 'bottom',
-            },
-            tooltip: {
-                enabled: true,
-                external: function (context) {
-                    context.tooltip.body.forEach((element) => {
-                        const content = element.lines[0].split(':')[1];
-                        element.lines[0] = content;
-                    })
-                }
+        legend: {
+          position: 'bottom',
+        },
+        tooltip: {
+          callbacks: {
+            label: function(tooltipItem) {
+              return `Gear Ratio: ${tooltipItem.raw.toFixed(2)}`;
             }
-          },
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Gear Step'
+          }
         },
-    };
+        y: {
+          title: {
+            display: true,
+            text: 'Gear Ratio'
+          }
+        }
+      }
+    }
+  });
 
-    new Chart(document.getElementById('acquisitions'), config);
+  updateChart(dataset, window.myChart);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const elems = document.querySelectorAll('.tooltipped');
-    const select = document.querySelectorAll('select');
-    const instancesElems = M.Tooltip.init(elems);
-    const instanceSelect = M.FormSelect.init(select);
+document.addEventListener('DOMContentLoaded', function () {
+  const elems = document.querySelectorAll('.tooltipped');
+  const select = document.querySelectorAll('select');
+  M.Tooltip.init(elems);
+  M.FormSelect.init(select);
 });
