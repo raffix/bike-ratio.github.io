@@ -1,36 +1,33 @@
-const chainringInputTemplate = `
-  <li class="input-field">
-    <input class="input-chainring" placeholder="Chainring teeth. ex.: 22-36 or 42" type="text" />
-  </li>`;
-  
-const cassetteInputTemplate = `
-  <li class="input-field">
-    <input class="input-cassette" placeholder="Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15" type="text" />
-  </li>`;
+function createInputTemplate(className, placeholder) {
+  return `
+    <li class="input-field">
+      <input class="${className}" placeholder="${placeholder}" type="text" />
+    </li>`;
+}
 
-/** Adds HTML content to a UL element with a specific ID */
-function addHTMLToUL(ulId, htmlContent) {
+const chainringInputTemplate = createInputTemplate('input-chainring', 'Chainring teeth. ex.: 22-36 or 42');
+const cassetteInputTemplate = createInputTemplate('input-cassette', 'Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15');
+
+function getULElement(ulId) {
   const ulElement = document.getElementById(ulId);
   if (!ulElement) {
     console.error(`UL element with ID "${ulId}" not found.`);
-    return;
+    return null;
   }
-  ulElement.insertAdjacentHTML('beforeend', htmlContent);
+  return ulElement;
+}
+
+/** Adds HTML content to a UL element with a specific ID */
+function addHTMLToUL(ulId, htmlContent) {
+  const ulElement = getULElement(ulId);
+  if (ulElement) ulElement.insertAdjacentHTML('beforeend', htmlContent);
 }
 
 /** Removes the last list item (LI) from a UL element */
 function removeLastLI(ulId) {
-  const ulElement = document.getElementById(ulId);
-  if (!ulElement) {
-    console.error(`UL element with ID "${ulId}" not found.`);
-    return;
-  }
+  const ulElement = getULElement(ulId);
   const lastLI = ulElement.querySelector('li:last-child');
-  if (lastLI) {
-    ulElement.removeChild(lastLI);
-  } else {
-    console.warn(`No list items to remove in UL with ID "${ulId}".`);
-  }
+  lastLI ? ulElement.removeChild(lastLI) : console.warn(`No list items to remove in UL with ID "${ulId}".`);
 }
 
 /** Adds a chainring input field */
@@ -56,16 +53,13 @@ function removeCassette() {
 /** Splits and trims a string by '-' and converts it to an array of numbers */
 function splitAndTrim(input) {
   return input.split('-')
-    .map(value => {
-      const trimmedValue = Number(value.trim());
-      return isNaN(trimmedValue) || trimmedValue <= 0 ? null : trimmedValue;
-    }).filter(Boolean);  // Filters out invalid (null/NaN) values
+    .map(value => Number(value.trim()))
+    .filter(num => !isNaN(num) && num > 0);
 }
 
 /** Extracts values from inputs of a given class name */
 function getValuesFromInputsByClassName(className) {
-  const inputs = document.querySelectorAll(`.${className}`);
-  return Array.from(inputs)
+  return Array.from(document.querySelectorAll(`.${className}`))
     .map(input => splitAndTrim(input.value))
     .filter(values => values.length > 0);
 }
