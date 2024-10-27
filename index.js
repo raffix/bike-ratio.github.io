@@ -100,26 +100,39 @@ function sortDataset(dataset, sortOrder) {
   return dataset;
 }
 
+function generalLabel(dataset) {
+  let maxSize = 0;
+
+  dataset.forEach(item => {
+    if (item.ratioWithLabels && Array.isArray(item.ratioWithLabels)) {
+      maxSize = Math.max(maxSize, item.ratioWithLabels.length);
+    }
+  });
+
+  // Generate an array from 1 to maxSize
+  return Array.from({ length: maxSize }, (_, i) => i + 1);
+}
+
 /** Updates the Chart.js chart with the new dataset */
 function updateChart(dataset, chart) {
-  const allLabels = new Set(); // Use a Set for unique labels
   const chartData = dataset.map(item => {
     const data = item.ratioWithLabels.map(d => {
-      allLabels.add(d.label); // Add labels to the Set
       return d.ratio;
     });
 
+    const color = getRandomColor();
     return {
       label: `Crank ${item.chainset} with Cassette ${item.cassette}`,
       data: data,
       fill: false,
-      borderColor: getRandomColor(),
+      borderColor: color,
+      backgroundColor: color,
       tension: 0.3,
       labels: item.ratioWithLabels.map(d => d.label) // Custom labels for tooltips
     };
   });
 
-  chart.data.labels = Array.from(allLabels); // Convert Set back to Array
+  chart.data.labels = generalLabel(dataset);
   chart.data.datasets = chartData;
   chart.update();
 }
@@ -184,8 +197,8 @@ function calculate() {
     options: {
       responsive: true,
       interaction: {
-        mode: 'nearest', // Changes the interaction mode
-        intersect: true // Only show tooltip when hovering over the point
+        mode: 'index',
+        intersect: false
       },
       plugins: {
         title: {
@@ -193,7 +206,8 @@ function calculate() {
           text: 'Gear Ratios for Chainring and Cassette Combinations'
         },
         legend: {
-          display: false, // Hide the legend
+          display: true,
+          position: "bottom",
         },
         tooltip: {
           callbacks: {
@@ -224,7 +238,6 @@ function calculate() {
 
   updateChart(dataset, window.myChart);
 
-  // Update the gear ratio table
   updateGearRatioTable(chainrings, cassettes);
 }
 
