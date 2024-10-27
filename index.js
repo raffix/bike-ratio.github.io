@@ -71,12 +71,18 @@ function buildDataset(chainrings, cassettes) {
 
   chainrings.forEach(chainset => {
     cassettes.forEach(cassette => {
-      const ratio = chainset.map(chainring => cassette.map(cog => chainring / cog)).flat();
+      const ratioWithLabels = chainset.map(chainring => 
+        cassette.map(cog => ({
+          ratio: chainring / cog,
+          label: `${chainring}/${cog}: ${(chainring / cog).toFixed(2)}`
+        }))
+      ).flat();
+
       data.push({
         id: id++,
         chainset,
         cassette,
-        ratio,
+        ratioWithLabels,
       });
     });
   });
@@ -88,7 +94,7 @@ function buildDataset(chainrings, cassettes) {
 function sortDataset(dataset, sortOrder) {
   if (sortOrder === "ascending") {
     dataset.forEach(item => {
-      item.ratio.sort((a, b) => a - b);
+      item.ratioWithLabels.sort((a, b) => a.ratio - b.ratio);
     });
   }
   return dataset;
@@ -96,16 +102,24 @@ function sortDataset(dataset, sortOrder) {
 
 /** Updates the Chart.js chart with the new dataset */
 function updateChart(dataset, chart) {
-  const labels = Array.from({ length: Math.max(...dataset.map(d => d.ratio.length)) }, (_, i) => i + 1);
-  const chartData = dataset.map(item => ({
-    label: `Crank ${item.chainset} with Cassette ${item.cassette}`,
-    data: item.ratio,
-    fill: false,
-    borderColor: getRandomColor(),
-    tension: 0.3
-  }));
+  const allLabels = new Set(); // Use a Set for unique labels
+  const chartData = dataset.map(item => {
+    const data = item.ratioWithLabels.map(d => {
+      allLabels.add(d.label); // Add labels to the Set
+      return d.ratio;
+    });
 
-  chart.data.labels = labels;
+    return {
+      label: `Crank ${item.chainset} with Cassette ${item.cassette}`,
+      data: data,
+      fill: false,
+      borderColor: getRandomColor(),
+      tension: 0.3,
+      labels: item.ratioWithLabels.map(d => d.label) // Custom labels for tooltips
+    };
+  });
+
+  chart.data.labels = Array.from(allLabels); // Convert Set back to Array
   chart.data.datasets = chartData;
   chart.update();
 }
@@ -118,7 +132,33 @@ function getRandomColor() {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-/** Main calculation function that processes inputs and updates the chart */
+/** Updates the gear ratio table with the calculated ratios */
+function updateGearRatioTable(chainrings, cassettes) {
+  const tableBody = document.getElementById("gear-ratio-table").getElementsByTagName("tbody")[0];
+  tableBody.innerHTML = ""; // Clear previous table contents
+
+  // Create the header row with chainrings
+  const headerRow = tableBody.insertRow();
+  headerRow.insertCell().innerText = "Cog / Chainring"; // Top left cell
+
+  chainrings.forEach(chainring => {
+    headerRow.insertCell().innerText = chainring.join('-'); // Joining multiple chainring values
+  });
+
+  // Create rows for each cog in the cassette
+  cassettes.forEach(cassette => {
+    const row = tableBody.insertRow();
+    row.insertCell().innerText = cassette.join('-'); // Joining multiple cassette values
+
+    chainrings.forEach(chainring => {
+      const ratios = chainring.map(r => cassette.map(cog => (r / cog).toFixed(2))); // Calculate ratios
+      const cell = row.insertCell();
+      cell.innerText = ratios.join(', '); // Joining all ratios for this cog
+    });
+  });
+}
+
+/** Main calculation function that processes inputs and updates the chart and table */
 function calculate() {
   const chainrings = getValuesFromInputsByClassName("input-chainring");
   const cassettes = getValuesFromInputsByClassName("input-cassette");
@@ -144,8 +184,8 @@ function calculate() {
     options: {
       responsive: true,
       interaction: {
-        mode: 'index',
-        intersect: false
+        mode: 'nearest', // Changes the interaction mode
+        intersect: true // Only show tooltip when hovering over the point
       },
       plugins: {
         title: {
@@ -153,12 +193,14 @@ function calculate() {
           text: 'Gear Ratios for Chainring and Cassette Combinations'
         },
         legend: {
-          position: 'bottom',
+          display: false, // Hide the legend
         },
         tooltip: {
           callbacks: {
             label: function(tooltipItem) {
-              return `Gear Ratio: ${tooltipItem.raw.toFixed(2)}`;
+              const datasetIndex = tooltipItem.datasetIndex;
+              const dataIndex = tooltipItem.dataIndex;
+              return window.myChart.data.datasets[datasetIndex].labels[dataIndex]; // Custom tooltip labels
             }
           }
         }
@@ -181,6 +223,9 @@ function calculate() {
   });
 
   updateChart(dataset, window.myChart);
+
+  // Update the gear ratio table
+  updateGearRatioTable(chainrings, cassettes);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
