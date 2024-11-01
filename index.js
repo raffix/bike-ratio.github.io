@@ -1,3 +1,54 @@
+const cassetteList = [
+  '11-13-15-18-21-24-28',
+  '12-14-16-18-21-24-28',
+  '12-14-16-18-21-26-32',
+  '12-13-14-15-17-19-21-23',
+  '12-13-15-17-19-21-23-25',
+  '13-14-15-17-19-21-23-26',
+  '11-13-15-17-19-21-24-28',
+  '11-13-15-17-20-23-26-30',
+  '11-13-15-18-21-24-28-32',
+  '11-13-15-18-21-24-28-34',
+  '12-14-16-18-21-24-28-32',
+  '11-13-15-18-22-27-33-40',
+  '11-13-15-18-22-27-35-45',
+  '11-13-15-17-19-21-24-28-32',
+  '11-13-15-17-20-23-26-30-34',
+  '11-13-15-17-20-23-26-30-36',
+  '11-13-15-17-20-23-28-34-41',
+  '11-13-15-17-20-23-28-36-46',
+  '11-13-15-17-19-21-24-28-32-36',
+  '11-12-13-14-15-17-19-21-23-25',
+  '12-13-14-15-17-19-21-23-25-28',
+  '11-12-14-16-18-20-22-25-28-32',
+  '11-13-15-17-19-21-23-26-30-34',
+  '11-13-15-17-20-23-26-30-34-39',
+  '11-13-15-18-21-24-28-32-37-42',
+  '11-13-15-17-20-23-26-30-36-43',
+  '11-13-15-18-21-24-28-32-37-46',
+  '11-13-15-17-20-23-28-34-41-48',
+  '11-13-15-17-19-21-23-25-27-30-34',
+  '11-13-15-17-19-21-23-25-27-30-34',
+  '11-13-15-17-19-21-24-27-31-35-40',
+  '11-13-15-17-19-21-24-28-32-37-42',
+  '11-13-15-17-20-23-26-30-34-39-45',
+  '11-13-15-17-19-21-24-28-32-37-46',
+  '11-13-15-17-20-23-26-30-36-43-50',
+  '11-13-15-18-21-24-28-33-39-45-51',
+  '11-12-13-14-15-16-17-19-21-24-27-30',
+  '11-12-13-14-15-17-19-21-24-27-30-34',
+  '11-12-13-14-15-17-19-21-24-28-32-36',
+  '10-12-14-16-18-21-24-28-32-36-40-45',
+  '10-12-14-16-18-21-24-28-33-39-45-51',
+];
+
+const cassetteSuggestions = {};
+cassetteList.forEach(cassette => {
+  cassetteSuggestions[cassette] = null;
+});
+
+
+
 function createInputTemplate(className, placeholder) {
   return `
     <li class="input-field">
@@ -6,7 +57,17 @@ function createInputTemplate(className, placeholder) {
 }
 
 const chainringInputTemplate = createInputTemplate('input-chainring', 'Chainring teeth. ex.: 22-36 or 42');
-const cassetteInputTemplate = createInputTemplate('input-cassette', 'Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15');
+const cassetteInputTemplate = createInputTemplate('input-cassette cassette-autocomplete', 'Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15');
+
+function initAutocompleteForInputs() {
+  const inputs = document.querySelectorAll('.cassette-autocomplete');
+  inputs.forEach(input => {
+    M.Autocomplete.init(input, {
+      data: cassetteSuggestions,
+      minLength: 1 // Show suggestions after typing one character
+    });
+  });
+}
 
 function getULElement(ulId) {
   const ulElement = document.getElementById(ulId);
@@ -43,6 +104,7 @@ function removeChainring() {
 /** Adds a cassette input field */
 function addCassette() {
   addHTMLToUL("cassettes-inputs", cassetteInputTemplate);
+  initAutocompleteForInputs();
 }
 
 /** Removes the last cassette input field */
@@ -196,6 +258,7 @@ function calculate() {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       interaction: {
         mode: 'index',
         intersect: false
@@ -240,6 +303,10 @@ function calculate() {
 
   updateGearRatioTable(chainrings, cassettes);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  initAutocompleteForInputs();
+});
 
 document.addEventListener('DOMContentLoaded', function () {
   const elems = document.querySelectorAll('.tooltipped');
