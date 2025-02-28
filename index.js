@@ -212,26 +212,43 @@ function updateGearRatioTable(chainrings, cassettes) {
   const tableBody = document.getElementById("gear-ratio-table").getElementsByTagName("tbody")[0];
   tableBody.innerHTML = ""; // Clear previous table contents
 
-  // Create the header row with chainrings
-  const headerRow = tableBody.insertRow();
-  headerRow.insertCell().innerText = "Cog / Chainring"; // Top left cell
+  const allChainringValues = new Set();
+  chainrings.forEach(chainringSet => {
+      chainringSet.forEach(chainring => {
+          allChainringValues.add(chainring);
+      });
+  });
+  const sortedChainringValues = Array.from(allChainringValues).sort((a, b) => a - b);
 
-  chainrings.forEach(chainring => {
-    headerRow.insertCell().innerText = chainring.join('-'); // Joining multiple chainring values
+  const allCassetteValues = new Set();
+  cassettes.forEach(cassetteSet => {
+      cassetteSet.forEach(cog => {
+          allCassetteValues.add(cog);
+      });
+  });
+  const sortedCassetteValues = Array.from(allCassetteValues).sort((a, b) => a - b);
+
+  // 3. Create table header
+  const headerRow = tableBody.insertRow();
+  headerRow.insertCell().innerText = "Cog / Chainring"; // Top-left cell
+
+  sortedChainringValues.forEach(chainring => {
+      headerRow.insertCell().innerText = chainring;
   });
 
-  // Create rows for each cog in the cassette
-  cassettes.forEach(cassette => {
-    const row = tableBody.insertRow();
-    row.insertCell().innerText = cassette.join('-'); // Joining multiple cassette values
+  // 4. Create table rows
+  sortedCassetteValues.forEach(cog => {
+      const row = tableBody.insertRow();
+      row.insertCell().innerText = cog; // Cog value for the row
 
-    chainrings.forEach(chainring => {
-      const ratios = chainring.map(r => cassette.map(cog => (r / cog).toFixed(2))); // Calculate ratios
-      const cell = row.insertCell();
-      cell.innerText = ratios.join(', '); // Joining all ratios for this cog
-    });
+      sortedChainringValues.forEach(chainring => {
+          const ratio = (chainring / cog).toFixed(2);
+          const cell = row.insertCell();
+          cell.innerText = ratio;
+      });
   });
 }
+
 
 /** Main calculation function that processes inputs and updates the chart and table */
 function calculate() {
