@@ -1,10 +1,11 @@
-This site wants make easy compare between different setups for your bike relation in a visual way.
+# This site wants to make it easy to visually compare different setups for your bike gears.
 
-https://raffix.github.io/bike-ratio.github.io/
+To access the site https://raffix.github.io/bike-ratio.github.io/
 
-The libraries used: 
+# The libraries used:
 https://materializecss.com/
 https://www.chartjs.org/
+
 
 
 Feel free to make a colaboration.
