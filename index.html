@@ -47,12 +47,12 @@
                 </li>
               </ul>
               <button 
-                class="btn-floating waves-effect"
+                class="btn-floating waves-effect teal darken-4"
                 onclick="addChainring()" >
                 <i class="material-icons">add</i>
               </button>
               <button 
-                class="btn-floating waves-effect red darken-1"
+                class="btn-floating waves-effect red darken-2"
                 onclick="removeChainring()" >
                 <i class="material-icons">remove</i>
               </button>
@@ -84,12 +84,12 @@
                 </li>
               </ul>
               <button 
-              class="btn-floating waves-effect"
+              class="btn-floating waves-effect teal darken-4"
               onclick="addCassette()" >
               <i class="material-icons">add</i>
             </button>
             <button 
-              class="btn-floating waves-effect red darken-1"
+              class="btn-floating waves-effect red darken-2"
               onclick="removeCassette()" >
               <i class="material-icons">remove</i>
             </button>
@@ -105,7 +105,7 @@
                 data-tooltip="Please add the necessary chainring setup you want to compare."
               >Results</span>
               <button
-                class="btn-floating waves-effect right"
+                class="btn-floating waves-effect right teal darken-4"
                 onclick="calculate()">
                 <i class="material-icons">play_arrow</i>
               </button>
@@ -116,26 +116,28 @@
                 </select>
               </div>
               <div id="chart-container" style="max-width: 800px; max-height: 600px;">
-                <canvas id="acquisitions"></canvas>
+                <canvas id="acquisitions" style="max-height: 510px"></canvas>
               </div>
               <div id="results"></div>
             </div>
           </div>
         </div>
-        <table id="gear-ratio-table" border="1">
-          <thead>
-            <tr>
-              <th>Cog / Chainring</th>
-              <!-- Chainrings will be dynamically inserted here -->
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Cogs will be dynamically inserted here -->
-          </tbody>
-        </table>
+        <div class="col s12">
+          <table id="gear-ratio-table" border="1">
+            <thead>
+              <tr>
+                <th>Cog / Chainring</th>
+                <!-- Chainrings will be dynamically inserted here -->
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Cogs will be dynamically inserted here -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
-    <footer class="page-footer teal lighten-2" id="footer">
+    <footer class="page-footer teal darken-4" id="footer">
       <div class="container">
         <div class="row">
           <div class="col l6 s12">
