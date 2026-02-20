@@ -365,10 +365,4 @@ document.addEventListener('DOMContentLoaded', function () {
   const select = document.querySelectorAll('select');
   M.Tooltip.init(elems);
   M.FormSelect.init(select);
-
-  document.getElementById('add-chainring-btn').addEventListener('click', addChainring);
-  document.getElementById('remove-chainring-btn').addEventListener('click', removeChainring);
-  document.getElementById('add-cassette-btn').addEventListener('click', addCassette);
-  document.getElementById('remove-cassette-btn').addEventListener('click', removeCassette);
-  document.getElementById('calculate-btn').addEventListener('click', calculate);
 });
