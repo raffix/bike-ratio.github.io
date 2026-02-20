@@ -23,7 +23,7 @@
               <ul id="chainring-inputs">
                 <li class="input-field">
                   <input 
-                    class="input-chainring" 
+                    class="input-chainring chainring-autocomplete" 
                     placeholder="Chainring teeth. ex.: 22-36 or 42" 
                     type="text"
                     value="22-44" 
@@ -31,7 +31,7 @@
                 </li>
                 <li class="input-field">
                   <input 
-                    class="input-chainring" 
+                    class="input-chainring chainring-autocomplete" 
                     placeholder="Chainring teeth. ex.: 22-36 or 42" 
                     type="text"
                     value="30-46" 
@@ -39,7 +39,7 @@
                 </li>
                 <li class="input-field">
                   <input 
-                    class="input-chainring" 
+                    class="input-chainring chainring-autocomplete" 
                     placeholder="Chainring teeth. ex.: 22-36 or 42" 
                     type="text"
                     value="30" 
@@ -47,13 +47,13 @@
                 </li>
               </ul>
               <button 
-                class="btn-floating waves-effect teal darken-4"
-                onclick="addChainring()" >
+                id="add-chainring-btn"
+                class="btn-floating waves-effect teal darken-4">
                 <i class="material-icons">add</i>
               </button>
               <button 
-                class="btn-floating waves-effect red darken-2"
-                onclick="removeChainring()" >
+                id="remove-chainring-btn"
+                class="btn-floating waves-effect red darken-2">
                 <i class="material-icons">remove</i>
               </button>
             </div>
@@ -84,15 +84,15 @@
                 </li>
               </ul>
               <button 
-              class="btn-floating waves-effect teal darken-4"
-              onclick="addCassette()" >
-              <i class="material-icons">add</i>
-            </button>
-            <button 
-              class="btn-floating waves-effect red darken-2"
-              onclick="removeCassette()" >
-              <i class="material-icons">remove</i>
-            </button>
+                id="add-cassette-btn"
+                class="btn-floating waves-effect teal darken-4">
+                <i class="material-icons">add</i>
+              </button>
+              <button 
+                id="remove-cassette-btn"
+                class="btn-floating waves-effect red darken-2">
+                <i class="material-icons">remove</i>
+              </button>
             </div>
           </div>
         </div>
@@ -105,8 +105,8 @@
                 data-tooltip="Please add the necessary chainring setup you want to compare."
               >Results</span>
               <button
-                class="btn-floating waves-effect right teal darken-4"
-                onclick="calculate()">
+                id="calculate-btn"
+                class="btn-floating waves-effect right teal darken-4">
                 <i class="material-icons">play_arrow</i>
               </button>
               <div class="input-field col s12 l3 right">

@@ -47,6 +47,34 @@ cassetteList.forEach(cassette => {
   cassetteSuggestions[cassette] = null;
 });
 
+const chainringList = [
+  '53-39',
+  '52-36',
+  '50-34',
+  '46-36',
+  '48-35',
+  '43-30',
+  '38-24',
+  '36-26',
+  '36-22',
+  '34',
+  '32',
+  '30',
+  '28',
+  '50-39-30',
+  '48-36-26',
+  '44-32-22',
+  '22-36',
+  '24-38',
+  '40',
+  '42',
+  '44'
+];
+
+const chainringSuggestions = {};
+chainringList.forEach(chainring => {
+  chainringSuggestions[chainring] = null;
+});
 
 
 function createInputTemplate(className, placeholder) {
@@ -56,7 +84,7 @@ function createInputTemplate(className, placeholder) {
     </li>`;
 }
 
-const chainringInputTemplate = createInputTemplate('input-chainring', 'Chainring teeth. ex.: 22-36 or 42');
+const chainringInputTemplate = createInputTemplate('input-chainring chainring-autocomplete', 'Chainring teeth. ex.: 22-36 or 42');
 const cassetteInputTemplate = createInputTemplate('input-cassette cassette-autocomplete', 'Cassette teeth. ex.: 11-12-13-14-15-18-21-24-28 or 15');
 
 function initAutocompleteForInputs() {
@@ -64,6 +92,14 @@ function initAutocompleteForInputs() {
   inputs.forEach(input => {
     M.Autocomplete.init(input, {
       data: cassetteSuggestions,
+      minLength: 1 // Show suggestions after typing one character
+    });
+  });
+
+  const chainringInputs = document.querySelectorAll('.chainring-autocomplete');
+  chainringInputs.forEach(input => {
+    M.Autocomplete.init(input, {
+      data: chainringSuggestions,
       minLength: 1 // Show suggestions after typing one character
     });
   });
@@ -94,6 +130,7 @@ function removeLastLI(ulId) {
 /** Adds a chainring input field */
 function addChainring() {
   addHTMLToUL("chainring-inputs", chainringInputTemplate);
+  initAutocompleteForInputs();
 }
 
 /** Removes the last chainring input field */
@@ -321,13 +358,17 @@ function calculate() {
   updateGearRatioTable(chainrings, cassettes);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  initAutocompleteForInputs();
-});
-
 document.addEventListener('DOMContentLoaded', function () {
+  initAutocompleteForInputs();
+
   const elems = document.querySelectorAll('.tooltipped');
   const select = document.querySelectorAll('select');
   M.Tooltip.init(elems);
   M.FormSelect.init(select);
+
+  document.getElementById('add-chainring-btn').addEventListener('click', addChainring);
+  document.getElementById('remove-chainring-btn').addEventListener('click', removeChainring);
+  document.getElementById('add-cassette-btn').addEventListener('click', addCassette);
+  document.getElementById('remove-cassette-btn').addEventListener('click', removeCassette);
+  document.getElementById('calculate-btn').addEventListener('click', calculate);
 });
