@@ -394,7 +394,7 @@ function removeCassette() {
 }
 
 function splitAndTrim(input) {
-  return input.split('-')
+  return input.replace(/\s*\(.*\)/, '').split('-')
     .map(value => Number(value.trim()))
     .filter(num => !isNaN(num) && num > 0);
 }
